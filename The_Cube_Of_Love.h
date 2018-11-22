@@ -23,8 +23,9 @@
 #define MUSICRING       6
 #define FFT_JOY3        7
 #define MUSICRAINBOW    8
+#define HEARTATTACK     9
 
-#define DEMO_ROUTINES   9
+#define DEMO_ROUTINES   10
 
 
 /********************************************
@@ -37,6 +38,21 @@ int delayVal;
 int brightness;
 int frameCount;
 int maxAmplitude;
+
+/***********************************
+ * jtennies10                      *
+ * heartAttack                     *
+ ***********************************/
+ const short heart[][6] = {
+  {0, 0, 1, 1, 0, 0},
+  {0, 1, 0, 0, 1, 0},
+  {1, 0, 0, 1, 0, 0},
+  {0, 1, 0, 0, 1, 0},
+  {0, 0, 1, 1, 0, 0},
+  {0, 0, 0, 0, 0, 0}
+ };
+int heartAttackCounter = 0;
+void heartAttack();
 
 /********************************************
  * Global functions                         *
@@ -87,6 +103,8 @@ void musicTower();
 void musicRainbow();
 void flyingCurve();
 void initSquarePointB();
+
+
 
 
 /********************************************

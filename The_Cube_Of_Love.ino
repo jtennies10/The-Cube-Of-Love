@@ -8,8 +8,12 @@
 //#include "beta-cube-library.h" 
 #include "L3D_CubePixel.h" 
 //#include <vector>
-#include "x6CubeMusicPack.h"
+#include "The_Cube_Of_Love.h"
 #include <math.h> 
+
+
+
+
 
 void setup() {
 /*************************************
@@ -87,6 +91,10 @@ initRing();
   fading=false;
   fadeValue=255;
   fadeSpeed=1;
+
+  
+
+   
 }
 
 void initMicrophone() {
@@ -111,10 +119,10 @@ void loop() {
     /* THE LINES BELOW SHOULD BE UNCOMMENTED */
     /* WHEN COMPILING EACH MODE INDIVIDUALLY */
     /* TO CREATE THE VISUALIZATIONS          */
-    /*****************************************
+    /*****************************************/
         autoCycle=false;
-        demo=GOLDENRAIN;
-     *****************************************/
+        demo=HEARTATTACK;
+     /*****************************************/
     switch(demo) {
       case(FFT_JOY):
         FFTJoy();
@@ -182,7 +190,14 @@ void loop() {
         musicRainbow();
             //     Serial.println("MR");
         break;
-     
+
+        //jtennies10
+        case(HEARTATTACK):
+          heartAttack();
+          heartAttackCounter++;
+          delay(100);
+        break;
+
         default:
         break;
     }
@@ -194,6 +209,31 @@ void loop() {
   checkFlipState();
   
   cube.show();
+}
+
+//jtennies10
+void heartAttack() {
+  Color voxelColor;
+
+  for(int x=0; x < cube.size; x++){
+    for(int y=0; y < cube.size; y++) {
+
+      //check if given (x,y) is part of heart
+      //if so, then determine what z plane led should light up
+      if(heart[x][y] == 1) {
+
+        int z = heartAttackCounter - y;
+        if(z < 0) z = 0;
+        if(z > 5) z = 5;
+        
+        cube.setVoxel(x, y, z, blue);
+
+        //turn off last z plane if applicable
+        if(z != 0) cube.setVoxel(x,y,(z-1), black);
+      
+      }
+    }
+  }
 }
 
 void fade() {
