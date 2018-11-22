@@ -195,7 +195,11 @@ void loop() {
         case(HEARTATTACK):
           heartAttack();
           heartAttackCounter++;
-          delay(100);
+          if(heartAttackCounter > 15) {
+            heartAttackCounter = 0;
+            heartForward = !heartForward;
+          }
+          delay(50);
         break;
 
         default:
@@ -221,8 +225,11 @@ void heartAttack() {
       //check if given (x,y) is part of heart
       //if so, then determine what z plane led should light up
       if(heart[x][y] == 1) {
-
         int z = heartAttackCounter - y;
+
+        //if heart is moving backward, set z equal to its complement
+        if(!heartForward)z = 5 - z;
+        
         if(z < 0) z = 0;
         if(z > 5) z = 5;
         
@@ -230,7 +237,7 @@ void heartAttack() {
 
         //turn off last z plane if applicable
         if(z != 0) cube.setVoxel(x,y,(z-1), black);
-      
+        if(z != 5) cube.setVoxel(x,y,(z+1), black);
       }
     }
   }

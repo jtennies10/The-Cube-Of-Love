@@ -52,6 +52,7 @@ int maxAmplitude;
   {0, 0, 0, 0, 0, 0}
  };
 int heartAttackCounter = 0;
+bool heartForward = true;
 void heartAttack();
 
 /********************************************
