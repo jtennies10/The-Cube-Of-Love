@@ -53,6 +53,10 @@ int maxAmplitude;
  };
 int heartAttackCounter = 0;
 bool heartForward = true;
+Color heartColor(198, 40, 40);
+const int MIN_HEART_RED = 120;
+const int MAX_HEART_RED = 200;
+int colorChange = 1; //used to control whether color values are rising or falling
 void heartAttack();
 
 /********************************************

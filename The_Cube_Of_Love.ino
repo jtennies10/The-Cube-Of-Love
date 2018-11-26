@@ -193,13 +193,7 @@ void loop() {
 
         //jtennies10
         case(HEARTATTACK):
-          heartAttack();
-          heartAttackCounter++;
-          if(heartAttackCounter > 15) {
-            heartAttackCounter = 0;
-            heartForward = !heartForward;
-          }
-          delay(50);
+          heartColor = heartAttack(heartColor);
         break;
 
         default:
@@ -216,8 +210,24 @@ void loop() {
 }
 
 //jtennies10
-void heartAttack() {
-  Color voxelColor;
+Color heartAttack(Color voxelColor) {
+
+  heartAttackCounter++;
+  if(heartAttackCounter > 10) {
+    heartAttackCounter = 0;
+    heartForward = !heartForward;
+  }
+
+  //only change led color every other movement to slow it down
+  if(heartAttackCounter % 2 == 0) {
+    if(voxelColor.red == MIN_HEART_RED) colorChange *= -1;
+    else if(voxelColor.red == MAX_HEART_RED) colorChange *= -1;
+    
+    voxelColor.red-=(2 * colorChange);
+    voxelColor.green-=(1 * colorChange);
+    voxelColor.blue-=(1 * colorChange);
+  }
+
 
   for(int x=0; x < cube.size; x++){
     for(int y=0; y < cube.size; y++) {
@@ -228,19 +238,22 @@ void heartAttack() {
         int z = heartAttackCounter - y;
 
         //if heart is moving backward, set z equal to its complement
-        if(!heartForward)z = 5 - z;
+        if(!heartForward) z = 5 - z;
         
         if(z < 0) z = 0;
         if(z > 5) z = 5;
+
         
-        cube.setVoxel(x, y, z, blue);
+        cube.setVoxel(x,y,z, voxelColor);
 
         //turn off last z plane if applicable
         if(z != 0) cube.setVoxel(x,y,(z-1), black);
         if(z != 5) cube.setVoxel(x,y,(z+1), black);
       }
     }
-  }
+  }         
+  delay(50);
+  return voxelColor;
 }
 
 void fade() {
