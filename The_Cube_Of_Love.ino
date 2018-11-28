@@ -121,7 +121,7 @@ void loop() {
     /* TO CREATE THE VISUALIZATIONS          */
     /*****************************************/
         autoCycle=false;
-        demo=HEARTATTACK;
+        demo=DYNAMITE;
      /*****************************************/
     switch(demo) {
       case(FFT_JOY):
@@ -192,9 +192,16 @@ void loop() {
         break;
 
         //jtennies10
+        //beginning of user-made functions
         case(HEARTATTACK):
           heartColor = heartAttack(heartColor);
         break;
+
+        //jtennies10
+        case(DYNAMITE):
+          dynamite();
+        break;
+
 
         default:
         break;
@@ -254,6 +261,27 @@ Color heartAttack(Color voxelColor) {
   }         
   delay(50);
   return voxelColor;
+}
+
+void dynamite() {
+  cube.shell(3,3,3,1, blue);
+  cube.show();
+  delay(1500);
+  Serial.println("1");
+  cube.shell(3,3,3,1, black);
+  cube.shell(3,3,3,2,.25, blue);
+  cube.show();
+  delay(1500);
+  Serial.println("2");
+  cube.shell(3,3,3,2,.25, black);
+  cube.shell(3,3,3,2, blue);
+  cube.show();
+  delay(1500);
+  cube.shell(3,3,3,2, black);
+  cube.shell(3,3,3,2,.50, blue);
+  cube.show();
+  delay(1500);
+  cube.shell(3,3,3,2,.50, black);
 }
 
 void fade() {

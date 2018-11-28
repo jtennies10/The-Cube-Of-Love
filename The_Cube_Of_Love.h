@@ -24,8 +24,9 @@
 #define FFT_JOY3        7
 #define MUSICRAINBOW    8
 #define HEARTATTACK     9
+#define DYNAMITE        10
 
-#define DEMO_ROUTINES   10
+#define DEMO_ROUTINES   11
 
 
 /********************************************
@@ -57,7 +58,14 @@ Color heartColor(198, 40, 40);
 const int MIN_HEART_RED = 120;
 const int MAX_HEART_RED = 200;
 int colorChange = 1; //used to control whether color values are rising or falling
-void heartAttack();
+Color heartAttack(Color voxelColor);
+
+/********************************************
+ * jtennies10                        
+ * dynamite*
+ ********************************************/
+void dynamite();
+
 
 /********************************************
  * Global functions                         *
