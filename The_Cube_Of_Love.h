@@ -64,7 +64,13 @@ Color heartAttack(Color voxelColor);
  * jtennies10                        
  * dynamite*
  ********************************************/
+int dynamiteX, dynamiteY, dynamiteZ, dynamiteRadius;
+float dynamiteThickness;
+bool dynamiteGathered;
 void dynamite();
+void explode();
+void regather();
+void initDynamite();
 
 
 /********************************************

@@ -92,6 +92,10 @@ initRing();
   fadeValue=255;
   fadeSpeed=1;
 
+/*************************************
+ * init dynamite variables               *
+ *************************************/
+   initDynamite();
   
 
    
@@ -217,6 +221,9 @@ void loop() {
 }
 
 //jtennies10
+//creates a heart on the led that move in a 
+//stagger motion from the back to front to back 
+//of the cube and continually repeats
 Color heartAttack(Color voxelColor) {
 
   heartAttackCounter++;
@@ -263,25 +270,62 @@ Color heartAttack(Color voxelColor) {
   return voxelColor;
 }
 
+
+//jtennies10
+//creates an explosion light effect and
+//then a regathering effect
 void dynamite() {
-  cube.shell(3,3,3,1, blue);
-  cube.show();
-  delay(1500);
-  Serial.println("1");
-  cube.shell(3,3,3,1, black);
-  cube.shell(3,3,3,2,.25, blue);
-  cube.show();
-  delay(1500);
-  Serial.println("2");
-  cube.shell(3,3,3,2,.25, black);
-  cube.shell(3,3,3,2, blue);
-  cube.show();
-  delay(1500);
-  cube.shell(3,3,3,2, black);
-  cube.shell(3,3,3,2,.50, blue);
-  cube.show();
-  delay(1500);
-  cube.shell(3,3,3,2,.50, black);
+  if(dynamiteGathered) explode();
+  else gather();
+}
+
+
+void explode() {
+//  Serial.print("exploding");
+//  Serial.print(dynamiteRadius);
+  //single led
+  //blow up to radius of one
+  //radius of one width .25
+  //radius of two
+  //radius of two width .10
+  //set gather to false
+  if(dynamiteRadius == -1) {
+//    Serial.print("in here");
+    cube.shell(dynamiteX, dynamiteY, dynamiteZ, ++dynamiteRadius, blue);
+  } else if(dynamiteRadius == 0) {
+    cube.shell(dynamiteX, dynamiteY, dynamiteZ, dynamiteRadius, black);
+    cube.shell(dynamiteX, dynamiteY, dynamiteZ, ++dynamiteRadius, blue); 
+  } else if(dynamiteRadius == 1) {
+    cube.shell(dynamiteX, dynamiteY, dynamiteZ, dynamiteRadius, black);
+    cube.shell(dynamiteX, dynamiteY, dynamiteZ, ++dynamiteRadius, blue);
+  } else {
+    dynamiteGathered = false;
+  }
+  delay(100);
+}
+
+void gather() {
+  if(dynamiteRadius == 2) {
+    cube.shell(dynamiteX, dynamiteY, dynamiteZ, dynamiteRadius, black);
+    cube.shell(dynamiteX, dynamiteY, dynamiteZ, --dynamiteRadius, blue);
+  } else if(dynamiteRadius == 1) {
+    cube.shell(dynamiteX, dynamiteY, dynamiteZ, dynamiteRadius, black);
+    cube.shell(dynamiteX, dynamiteY, dynamiteZ, --dynamiteRadius, blue); 
+//  } else if(dynamiteRadius == 0) {
+//    dynamiteRadius--;
+  } else {
+    dynamiteGathered = true;
+  }
+  delay(100);
+}
+
+void initDynamite() {
+  dynamiteX = 2;
+  dynamiteY = 2;
+  dynamiteZ = 3;
+  dynamiteRadius = 0;
+  dynamiteThickness = .50;
+  dynamiteGathered = true;
 }
 
 void fade() {
@@ -1249,6 +1293,8 @@ void incrementDemo() {
   fading=true;
   if(demo==GOLDENRAIN || demo==PURPLERAIN || demo==ACIDRAIN)
     initSalvos();
+  if(demo==DYNAMITE)
+    initDynamite();
   if(demo>=DEMO_ROUTINES)
     demo=0;
 }
@@ -1259,6 +1305,8 @@ void decrementDemo() {
   fading=true;
   if(demo==GOLDENRAIN || demo==PURPLERAIN || demo==ACIDRAIN)
     initSalvos();
+  if(demo==DYNAMITE)
+    initDynamite();
   if(demo<0)
     demo=DEMO_ROUTINES-1;
 }
