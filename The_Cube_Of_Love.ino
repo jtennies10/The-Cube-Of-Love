@@ -125,7 +125,7 @@ void loop() {
     /* TO CREATE THE VISUALIZATIONS          */
     /*****************************************/
         autoCycle=false;
-        demo=DYNAMITE;
+        demo=STATIC_HEART;
      /*****************************************/
     switch(demo) {
       case(FFT_JOY):
@@ -206,6 +206,14 @@ void loop() {
           dynamite();
         break;
 
+        case(STATIC_HEART):
+          staticHeart();
+        break;          
+
+
+        case(STATIC_ROSE):
+          staticRose();
+        break;
 
         default:
         break;
@@ -327,6 +335,29 @@ void initDynamite() {
   dynamiteThickness = .50;
   dynamiteGathered = true;
 }
+
+//jtennies10
+//static displays
+void staticHeart() {
+  for(int x = 0; x < cube.size; x++) {
+    for(int y = 0; y < cube.size; y++) {
+      if(heart[x][y] == 1) { //only light up the front-most plane
+        cube.setVoxel(x, y, 5, red);
+      }
+    }
+  }
+}
+
+void staticRose() {
+  for(int x = 0; x < cube.size; x++) {
+    for(int y = 0; y < cube.size; y++) {
+      for(int z = 0; z < cube.size; z++) {
+        //draw rose
+      }
+    }
+  }
+}
+
 
 void fade() {
   Color voxelColor;

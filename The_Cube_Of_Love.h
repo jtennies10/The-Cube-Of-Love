@@ -26,11 +26,9 @@
 #define HEARTATTACK     9
 #define DYNAMITE        10
 #define STATIC_HEART    11
-#define STATIC_TREES    12
-#define STATIC_ROSE     13
-#define STATIC_FACE     14
+#define STATIC_ROSE     12
 
-#define DEMO_ROUTINES   15
+#define DEMO_ROUTINES   13
 
 
 /********************************************
@@ -75,6 +73,21 @@ void dynamite();
 void explode();
 void regather();
 void initDynamite();
+
+
+/********************************************
+ * jtennies10                        
+ * staticHeart*
+ ********************************************/
+ void staticHeart();
+ 
+ 
+/********************************************
+ * jtennies10                        
+ * staticRose*
+ ********************************************/
+void staticRose();
+
 
 
 /********************************************
