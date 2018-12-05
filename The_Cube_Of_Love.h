@@ -25,8 +25,12 @@
 #define MUSICRAINBOW    8
 #define HEARTATTACK     9
 #define DYNAMITE        10
+#define STATIC_HEART    11
+#define STATIC_TREES    12
+#define STATIC_ROSE     13
+#define STATIC_FACE     14
 
-#define DEMO_ROUTINES   11
+#define DEMO_ROUTINES   15
 
 
 /********************************************
