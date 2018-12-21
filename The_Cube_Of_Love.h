@@ -20,15 +20,18 @@
 #define ACIDRAIN        3
 #define FFT_FIRE        4
 #define MUSICTOWER      5
-#define MUSICRING       6
-#define FFT_JOY3        7
-#define MUSICRAINBOW    8
-#define HEARTATTACK     9
-#define DYNAMITE        10
-#define STATIC_HEART    11
-#define STATIC_ROSE     12
 
-#define DEMO_ROUTINES   13
+#define  FIREWORKS      6
+#define  PLASMA         7
+#define  RAINBOW3D      8
+#define CUBESPANDER     9
+#define ZEROGRAIN       10
+#define HEARTATTACK     11
+
+#define STATIC_HEART    12
+#define STATIC_S        13
+
+#define DEMO_ROUTINES   14
 
 
 /********************************************
@@ -41,6 +44,66 @@ int delayVal;
 int brightness;
 int frameCount;
 int maxAmplitude;
+
+
+/*******************************
+ * fireworks variables and functions*
+ * ****************************/
+ int centerX, centerY, centerZ;
+int launchX, launchZ, fadeTimer;
+float radius=0;
+float speed;
+bool showRocket;
+bool exploded;
+float xInc, yInc, zInc;
+float rocketX, rocketY, rocketZ;
+float launchTime;
+int maxSize;
+Color rocketColor, fireworkColor;
+void initFireworks();
+void prepRocket();
+void updateFireworks();
+
+/********************************
+ * zplasma variables and functions*
+ * *****************************/
+float phase = 0.0;
+float phaseIncrement = 0.03; // Controls the speed of the moving points. Higher == faster
+float colorStretch = 0.1; // Higher numbers will produce tighter color bands 
+float plasmaBrightness = 0.2;
+Color plasmaColor;
+void zPlasma();
+
+/*********************************
+ * CubeSpander variables and functions*
+ * *******************************/
+
+int side=0;
+int inc=1;
+int mode=0;
+//int frame=0;
+Color cubeCol;
+void drawCube(Point topLeft, int side, Color col);
+void drawLine(Point p1, Point p2, Color col);
+void mixVoxel(Point currentPoint, Color col);
+Color complement(Color original);
+void cubeInc();
+void CubeSpander();
+
+/*********************************
+ * ZeroGRain variables and function*
+ * *******************************/
+int Gaxis = 1;    // Which axis are we crumbling through?  0=x, 1=y, 2=z.
+int flips;
+const int NUM_FLIPS = 5;
+Color readVoxel;
+void resetZeroGRainCycle();
+void ZeroGRainCycle();
+
+/*********************************
+ * Rainbow3D variables and function*
+ * *******************************/
+void Rainbow3D();
 
 /***********************************
  * jtennies10                      *
@@ -62,17 +125,6 @@ const int MAX_HEART_RED = 200;
 int colorChange = 1; //used to control whether color values are rising or falling
 Color heartAttack(Color voxelColor);
 
-/********************************************
- * jtennies10                        
- * dynamite*
- ********************************************/
-int dynamiteX, dynamiteY, dynamiteZ, dynamiteRadius;
-float dynamiteThickness;
-bool dynamiteGathered;
-void dynamite();
-void explode();
-void regather();
-void initDynamite();
 
 
 /********************************************
@@ -80,13 +132,21 @@ void initDynamite();
  * staticHeart*
  ********************************************/
  void staticHeart();
- 
- 
+
 /********************************************
  * jtennies10                        
- * staticRose*
+ * staticS
  ********************************************/
-void staticRose();
+ void staticS();
+ const short sMatrix[][6] = {
+  {0, 0, 0, 0, 0, 0},
+  {1, 0, 0, 1, 0, 0},
+  {1, 0, 1, 0, 1, 0},
+  {1, 0, 1, 0, 1, 0},
+  {0, 1, 0, 0, 1, 0},
+  {0, 0, 0, 0, 0, 0}
+ };
+ 
 
 
 
@@ -133,10 +193,7 @@ Point ring[24];
  * Samtim's modes' functions                *
  ********************************************/
 void FFTJoy2();
-void FFTJoy3();
-void musicRing();
 void musicTower();
-void musicRainbow();
 void flyingCurve();
 void initSquarePointB();
 
@@ -207,29 +264,6 @@ void launchRain(int amplitude);
 void fadeBase(float scaleFactor);
 float setNewSpeed();
 
-
-/********************************************
- * 3D Audio Rainbow variables & functions   *
- ********************************************
-#define UPDATE_RATE       15
-#define NUM_SAMPLES       25
-
-// Rainbow variables
-unsigned char SAMTIM_MODE, VU_MODE, PEAK_HOLD, DOT_MODE;
-byte currentBg, vr;
-uint16_t ySpan;
-float sensitivityAudioRainbow;
-Color colorA, colorB, cubeColor;
-
-// Function declarations
-Color Wheel(byte WheelPos, float opacity);
-Color adjustGamma(Color col, float opacity);
-void doBlanking();
-void fade(float speed);
-void fadeTopDown(float speed, bool wipe);
-void checkMicAudioRainbow();
-void initMicrophone();
-*/
 
 /********************************************
  * flip variables & functions               *

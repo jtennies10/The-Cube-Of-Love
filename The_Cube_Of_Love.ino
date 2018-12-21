@@ -20,7 +20,8 @@ void setup() {
  * init global variables             *
  *************************************/
   delayVal=10;
-  demo=FFT_JOY;
+//  demo=FFT_JOY;
+  demo=ZEROGRAIN;
   frameCount=0;
   brightness=50;
   //maxBrightness=50;
@@ -73,6 +74,7 @@ colorInc=0;
 
 initSquarePointB();
 initRing();
+initFireworks();
 
 /*************************************
  * init flip variables               *
@@ -91,11 +93,6 @@ initRing();
   fading=false;
   fadeValue=255;
   fadeSpeed=1;
-
-/*************************************
- * init dynamite variables               *
- *************************************/
-   initDynamite();
   
 
    
@@ -108,7 +105,7 @@ void initMicrophone() {
 
 void loop() {
   if(fading) {
-    fadeValue-=3;
+    fadeValue--;
     if(fadeValue>0)
       fade(2);
     //if we're done fading
@@ -124,10 +121,37 @@ void loop() {
     /* WHEN COMPILING EACH MODE INDIVIDUALLY */
     /* TO CREATE THE VISUALIZATIONS          */
     /*****************************************/
-        autoCycle=false;
-        demo=STATIC_HEART;
+//        autoCycle=false;
+//        demo=STATIC_S;
      /*****************************************/
+    
+    if((demo==FIREWORKS && exploded))
+            fade(); //cube.background(black);
+        else if (demo!=FFT_JOY)
+            smoothFade();
+    
     switch(demo) {
+      case(FIREWORKS):
+        updateFireworks();
+  //      Serial.println("F");
+        break;
+      case(PLASMA):
+        zPlasma();
+     //     Serial.println("P");
+        break;
+      case(RAINBOW3D):
+        Rainbow3D();
+        break;
+        
+      case(ZEROGRAIN):
+        ZeroGRainCycle();
+        break;
+                       
+      case(CUBESPANDER):
+        CubeSpander();
+        break;
+
+      
       case(FFT_JOY):
         FFTJoy();
       //     Serial.println("FT");
@@ -175,48 +199,29 @@ void loop() {
           ledColor++;
           if(ledColor>400) ledColor=0;
           //delay(15);
-        break;
+          break;
         
         case(MUSICTOWER):
           musicTower();
-        break;  
-         
-        case(MUSICRING):
-          musicRing();
-        break;
-
-        case(FFT_JOY3):
-                FFTJoy3();
-           //     Serial.println("FT3");
-        break;
-
-        case(MUSICRAINBOW):
-        musicRainbow();
-            //     Serial.println("MR");
-        break;
+          break;  
 
         //jtennies10
         //beginning of user-made functions
         case(HEARTATTACK):
           heartColor = heartAttack(heartColor);
-        break;
+          break;
 
-        //jtennies10
-        case(DYNAMITE):
-          dynamite();
-        break;
 
         case(STATIC_HEART):
           staticHeart();
-        break;          
+          break;    
 
-
-        case(STATIC_ROSE):
-          staticRose();
-        break;
+        case(STATIC_S):
+          staticS();
+          break;
 
         default:
-        break;
+          break;
     }
     
     frameCount++;
@@ -227,6 +232,353 @@ void loop() {
   
   cube.show();
 }
+
+/********************************
+ * Fireworks functions *
+ * *****************************/
+void updateFireworks()
+{
+  if(showRocket)
+  {
+      cube.sphere(rocketX,rocketY,rocketZ,radius, rocketColor);
+      rocketX+=xInc*.25;
+      rocketY+=yInc*.25;
+      rocketZ+=zInc*.25;
+  }
+  else if(exploded)
+  {
+      cube.shell(rocketX,rocketY,rocketZ,radius,fireworkColor);
+      //if our sphere gets too large, restart the animation in another random spot
+      if(radius>maxSize) {
+        prepRocket();
+      }
+      else 
+        radius+=speed;  //the sphere gets bigger
+  }
+  
+  if(abs(distance(centerX,centerY,centerZ,rocketX, rocketY, rocketZ)-radius)<2)
+  {
+      showRocket=false;
+      exploded=true;
+  }
+}
+
+void prepRocket()
+{
+            showRocket=true;
+            exploded=false;
+            radius=0;
+            centerX=rand()%8;
+            centerY=rand()%8;
+            centerZ=rand()%8;
+            fireworkColor.red=rand()%brightness;
+            fireworkColor.green=rand()%brightness;
+            fireworkColor.blue=rand()%brightness;
+            launchX=rand()%4;
+            launchZ=rand()%4;
+            rocketX=launchX;
+            rocketY=0;
+            rocketZ=launchZ;
+            launchTime=1+rand()%15;
+            xInc=(centerX-rocketX)/launchTime;
+            yInc=(centerY-rocketY)/launchTime;
+            zInc=(centerZ-rocketZ)/launchTime;
+            speed=0.08;
+            maxSize=2+rand()%6;
+            //speed=rand()%5;
+            //speed*=0.1;
+}
+
+void initFireworks()
+{
+    rocketColor.red=255;
+    rocketColor.green=150;
+    rocketColor.blue=100;
+    prepRocket();
+}
+
+/********************************
+ * zplasma functions *
+ * *****************************/
+ 
+void zPlasma()
+{
+Point p1,p2,p3,dist1,dist2,dist3;
+phase += phaseIncrement;
+// The two points move along Lissajious curves, see: http://en.wikipedia.org/wiki/Lissajous_curve
+// We want values that fit the LED grid: x values between 0..6, y values between 0..6, z values between 0...6
+// The sin() function returns values in the range of -1.0..1.0, so scale these to our desired ranges.
+// The phase value is multiplied by various constants; I chose these semi-randomly, to produce a nice motion.
+ p1 = { (sin(phase*1.000)+1.0) * cube.size, (sin(phase*1.310)+1.0) * cube.size,  (sin(phase*1.380)+1.0) * cube.size};
+ p2 = { (sin(phase*1.770)+1.0) * cube.size, (sin(phase*2.865)+1.0) * cube.size,  (sin(phase*1.410)+1.0) * cube.size};
+ p3 = { (sin(phase*0.250)+1.0) * cube.size, (sin(phase*0.750)+1.0) * cube.size,  (sin(phase*0.380)+1.0) * cube.size};
+
+byte row, col, dep;
+
+// For each row
+for(row=0; row<cube.size; row++) {
+float row_f = float(row); // Optimization: Keep a floating point value of the row number, instead of recasting it repeatedly.
+
+// For each column
+for(col=0; col<cube.size; col++) {
+float col_f = float(col); // Optimization.
+
+// For each depth
+for(dep=0; dep<cube.size; dep++) {
+float dep_f = float(dep); // Optimization.
+
+// Calculate the distance between this LED, and p1.
+ dist1 = { col_f - p1.x, row_f - p1.y,  dep_f - p1.z }; // The vector from p1 to this LED.
+float distance1 = sqrt( dist1.x*dist1.x + dist1.y*dist1.y + dist1.z*dist1.z);
+
+// Calculate the distance between this LED, and p2.
+ dist2 = { col_f - p2.x, row_f - p2.y,  dep_f - p2.z}; // The vector from p2 to this LED.
+float distance2 = sqrt( dist2.x*dist2.x + dist2.y*dist2.y + dist2.z*dist2.z);
+
+// Calculate the distance between this LED, and p3.
+ dist3 = { col_f - p3.x, row_f - p3.y,  dep_f - p3.z}; // The vector from p3 to this LED.
+float distance3 = sqrt( dist3.x*dist3.x + dist3.y*dist3.y + dist3.z*dist3.z);
+
+// Warp the distance with a sin() function. As the distance value increases, the LEDs will get light,dark,light,dark,etc...
+// You can use a cos() for slightly different shading, or experiment with other functions.
+float color_1 = distance1; // range: 0.0...1.0
+float color_2 = distance2;
+float color_3 = distance3;
+float color_4 = (sin( distance1 * distance2 * colorStretch )) + 2.0 * 0.5;
+// Square the color_f value to weight it towards 0. The image will be darker and have higher contrast.
+color_1 *= color_1 * color_4;
+color_2 *= color_2 * color_4;
+color_3 *= color_3 * color_4;
+color_4 *= color_4;
+// Scale the color up to 0..7 . Max brightness is 7.
+//strip.setPixelColor(col + (8 * row), strip.Color(color_4, 0, 0) );
+plasmaColor.red=color_1*plasmaBrightness;
+plasmaColor.green=color_2*plasmaBrightness;
+plasmaColor.blue=color_3*plasmaBrightness;
+
+cube.setVoxel(row,col,dep,plasmaColor);       
+}
+}
+}
+}
+
+
+void Rainbow3D()
+{
+  uint16_t j;
+  uint16_t x,y,z;
+  for(j=0;j<256;j+=3){
+    for(z=0;z<cube.size;z++)
+     for(x=0;x<cube.size;x++)
+       for(y=0;y<cube.size;y++)
+       {
+         cube.setVoxel(x,y,z,Wheel(((z*36+x*6+y)/2+j)&255));
+       }
+    cube.show();
+    delay(10);
+    checkFlipState();
+    //if(demo!=RAINBOW3D) return;
+  }
+  
+}
+
+/****************************************
+ * CubeSpander functions *
+ * **************************************/
+void CubeSpander()
+{
+   Point topLeft=Point(0, 0, 0);
+   switch(mode) {
+    case(0):
+    topLeft=Point(0, 0, 0);
+    cubeCol=Color(255, 0, 0);
+    break;
+    case(1):
+    topLeft=Point(cube.size-1-side, 0, 0);
+    cubeCol=Color(255, 255, 0);
+    break;
+    case(2):
+    topLeft=Point(cube.size-1-side, cube.size-1-side, 0);
+    cubeCol=Color(0, 255, 0);
+    break;
+    case(3):
+    topLeft=Point(0, cube.size-1-side, 0);
+    cubeCol=Color(0, 0, 255);
+    break;
+    case(4):
+    topLeft=Point(0, 0, cube.size-1-side);
+    cubeCol=Color(255, 0, 255);
+    break;
+    case(5):
+    topLeft=Point(cube.size-1-side, 0, cube.size-1-side);
+    cubeCol=Color(0, 255, 255);
+    break;
+    case(6):
+    topLeft=Point(cube.size-1-side, cube.size-1-side, cube.size-1-side);
+    cubeCol=Color(255, 255, 255);
+    break;
+    case(7):
+    topLeft=Point(0, cube.size-1-side, cube.size-1-side);
+    cubeCol=Color(0, 180, 130);
+    break;
+  }
+  drawCube(topLeft, side, cubeCol);
+  //if (frame%5==0)
+    cubeInc();
+  //frame++;
+  cube.show();
+  delay(100);
+}
+
+void drawCube(Point topLeft, int side, Color col)
+{
+  Point topPoints[4];
+  Point bottomPoints[4];
+  topPoints[0]=topLeft;
+  topPoints[1]=Point(topLeft.x+side, topLeft.y, topLeft.z);
+  topPoints[2]=Point(topLeft.x+side, topLeft.y+side, topLeft.z);
+  topPoints[3]=Point(topLeft.x, topLeft.y+side, topLeft.z);
+  Point bottomLeft=Point(topLeft.x, topLeft.y, topLeft.z+side);
+  bottomPoints[0]=bottomLeft;
+  bottomPoints[1]=Point(bottomLeft.x+side, bottomLeft.y, bottomLeft.z);
+  bottomPoints[2]=Point(bottomLeft.x+side, bottomLeft.y+side, bottomLeft.z);
+  bottomPoints[3]=Point(bottomLeft.x, bottomLeft.y+side, bottomLeft.z);
+  for (int i=0; i<4; i++)
+  {
+    drawLine(topPoints[i], bottomPoints[i], col);
+    drawLine(topPoints[i], topPoints[(i+1)%4], col);
+    drawLine(bottomPoints[i], bottomPoints[(i+1)%4], col);
+  }
+  Color comp=complement(col);
+  for (int i=0; i<4; i++)
+  {
+    cube.setVoxel(topPoints[i], comp);
+    cube.setVoxel(bottomPoints[i], comp);
+  }
+}
+
+void cubeInc()
+{
+  side+=inc;
+  if ((side==cube.size-1)||(side==0))
+    inc*=-1;
+  if (side==0)
+    mode++;
+  if (mode>7)  
+    mode=0;
+}  
+
+/****************************************
+ * ZeroGRain functions *
+ * **************************************/
+ void setVoxel( int x, int y, int z, Color col ){
+  
+  int t;  // a temp int used to swap two values.
+  switch( Gaxis ){
+    case 0: t = y;  y = z;  z = t;  break;
+    case 1: t = x;  x = z;  z = t;  break;
+    case 2: t = x;  x = y;  y = t;  break;
+  }
+
+  cube.setVoxel( x, y, z, col );
+}
+
+ Color getVoxel( int x, int y, int z){
+  
+  int t;  // a temp int used to swap two values.
+  switch( Gaxis ){
+    case 0: t = y;  y = z;  z = t;  break;
+    case 1: t = x;  x = z;  z = t;  break;
+    case 2: t = x;  x = y;  y = t;  break;
+  }
+
+  return cube.getVoxel( x, y, z);
+}
+
+void ZeroGRainCycle(){
+  
+  if( ++flips>=NUM_FLIPS ){
+    if( ++Gaxis>2 )
+      Gaxis = 0;
+    flips = 0;
+  }
+
+Color clearColor = Color( 0, 0, 0 );
+Color mainColor = Color( 0, rand()%3*50, rand()%2*50 );
+cube.background(black);
+uint sum=true;
+  for( int x=0; x<cube.size; x++ )
+    for( int y=0; y<cube.size; y++ ){
+        setVoxel( x, y, 0, mainColor );
+        }
+     cube.show();
+     checkFlipState();
+     //if(demo!=ZEROGRAIN) return;
+  
+  while(sum){   
+    int x = rand()%6;
+    int y = rand()%6;
+
+    readVoxel=getVoxel(x,y,0);   
+    if(readVoxel.green!=0||readVoxel.red!=0||readVoxel.blue!=0)
+    for(int z=1;z<cube.size;z++){
+    setVoxel( x, y, z, mainColor );
+    setVoxel(x,y,z-1,clearColor);
+    cube.show();
+    checkFlipState();
+    //if(demo!=ZEROGRAIN) return;
+    }
+    sum=0;
+    for( x=0;x<cube.size;x++)
+      for(y=0;y<cube.size;y++){
+      readVoxel=getVoxel(x,y,0);
+      sum+=readVoxel.green;
+      sum+=readVoxel.blue;
+      sum+=readVoxel.red;
+      }
+     
+  }
+  
+//===============Flip===================
+cube.background(black);
+sum=true;
+  for( int x=0; x<cube.size; x++ )
+    for( int y=0; y<cube.size; y++ ){
+        setVoxel( x, y, 5, mainColor );
+        }
+     cube.show();
+     checkFlipState();
+     //if(demo!=ZEROGRAIN) return;
+  
+  while(sum){   
+    int x = rand()%6;
+    int y = rand()%6;
+
+    readVoxel=getVoxel(x,y,5);   
+    if(readVoxel.green!=0||readVoxel.red!=0||readVoxel.blue!=0)
+    for(int z=4;z>=0;z--){
+    setVoxel( x, y, z, mainColor );
+    setVoxel(x,y,z+1,clearColor);
+    cube.show();
+    checkFlipState();
+    //if(demo!=ZEROGRAIN) return;
+    }
+    sum=0;
+    for( x=0;x<cube.size;x++)
+      for(y=0;y<cube.size;y++){
+      readVoxel=getVoxel(x,y,5);
+      sum+=readVoxel.green;
+      sum+=readVoxel.blue;
+      sum+=readVoxel.red;
+      }
+      checkFlipState();
+  }
+  
+  delay(100);
+}
+
+
+
 
 //jtennies10
 //creates a heart on the led that move in a 
@@ -278,64 +630,6 @@ Color heartAttack(Color voxelColor) {
   return voxelColor;
 }
 
-
-//jtennies10
-//creates an explosion light effect and
-//then a regathering effect
-void dynamite() {
-  if(dynamiteGathered) explode();
-  else gather();
-}
-
-
-void explode() {
-//  Serial.print("exploding");
-//  Serial.print(dynamiteRadius);
-  //single led
-  //blow up to radius of one
-  //radius of one width .25
-  //radius of two
-  //radius of two width .10
-  //set gather to false
-  if(dynamiteRadius == -1) {
-//    Serial.print("in here");
-    cube.shell(dynamiteX, dynamiteY, dynamiteZ, ++dynamiteRadius, blue);
-  } else if(dynamiteRadius == 0) {
-    cube.shell(dynamiteX, dynamiteY, dynamiteZ, dynamiteRadius, black);
-    cube.shell(dynamiteX, dynamiteY, dynamiteZ, ++dynamiteRadius, blue); 
-  } else if(dynamiteRadius == 1) {
-    cube.shell(dynamiteX, dynamiteY, dynamiteZ, dynamiteRadius, black);
-    cube.shell(dynamiteX, dynamiteY, dynamiteZ, ++dynamiteRadius, blue);
-  } else {
-    dynamiteGathered = false;
-  }
-  delay(100);
-}
-
-void gather() {
-  if(dynamiteRadius == 2) {
-    cube.shell(dynamiteX, dynamiteY, dynamiteZ, dynamiteRadius, black);
-    cube.shell(dynamiteX, dynamiteY, dynamiteZ, --dynamiteRadius, blue);
-  } else if(dynamiteRadius == 1) {
-    cube.shell(dynamiteX, dynamiteY, dynamiteZ, dynamiteRadius, black);
-    cube.shell(dynamiteX, dynamiteY, dynamiteZ, --dynamiteRadius, blue); 
-//  } else if(dynamiteRadius == 0) {
-//    dynamiteRadius--;
-  } else {
-    dynamiteGathered = true;
-  }
-  delay(100);
-}
-
-void initDynamite() {
-  dynamiteX = 2;
-  dynamiteY = 2;
-  dynamiteZ = 3;
-  dynamiteRadius = 0;
-  dynamiteThickness = .50;
-  dynamiteGathered = true;
-}
-
 //jtennies10
 //static displays
 void staticHeart() {
@@ -348,11 +642,12 @@ void staticHeart() {
   }
 }
 
-void staticRose() {
+void staticS() {
+  //display s
   for(int x = 0; x < cube.size; x++) {
     for(int y = 0; y < cube.size; y++) {
-      for(int z = 0; z < cube.size; z++) {
-        //draw rose
+      if(sMatrix[x][y] == 1) {
+        cube.setVoxel(x,y,5,blue);
       }
     }
   }
@@ -393,6 +688,26 @@ void fade(float speed) {
         cube.setVoxel(x,y,z, voxelColor);    
       }
 }
+
+void smoothFade()
+{
+    Color voxelColor;
+    for(int x=0;x<cube.size;x++)
+        for(int y=0;y<cube.size;y++)
+            for(int z=0;z<cube.size;z++)
+            {
+                voxelColor=cube.getVoxel(x,y,z);
+                if(voxelColor.red>0)
+                  voxelColor.red = voxelColor.red*.5;
+                if(voxelColor.green>0)
+                  voxelColor.green = voxelColor.green*.5;
+                if(voxelColor.blue>0)
+                  voxelColor.blue = voxelColor.blue*.5;
+                cube.setVoxel(x,y,z, voxelColor);   
+           //     delayMicroseconds(100); 
+            }
+}
+
 
 /** Fade out all voxels to black
   @param scaleFactor is a percentage of the current color in decimal form, i.e 0.125 */
@@ -1029,197 +1344,8 @@ void launchRain(int amplitude) {
   }
   colorInc+=colorSpeed*5;
 }
-/****************************************
- * musicRing functions *
- * **************************************/
 
- void musicRing(){
-  Sinewave mySinewave;
-  static long t=0;
- 
-  Color musicRingColor = Color( 0, 0, 50 );
-  Color clearColor = Color( 0, 0, 0 );
 
-//  delay(5);
-  for(int i=0;i<getSinewaveSampleNum;i++){
-  mySinewave=cube.getSinewave(1000);
-  runningAverage+=mySinewave.amplitude;
-  runningPeriod+=mySinewave.timePeriod;
-}
-  runningAverage/=getSinewaveSampleNum;
-  runningPeriod/=getSinewaveSampleNum;
-  addAverageToChain(runningAverage);
-
-  trendAverage=getTrendAverage(30);
-  
-  if(runningAverage>trendAverage) t=(runningAverage-trendAverage)/30+sqrt(runningAverage)/8;
-  else t=8-(trendAverage-runningAverage)/55;
-  colorInc+=colorSpeed;
-/*
-  Serial.print(runningAverage);
-  Serial.print("   "); 
-  Serial.print(runningAverage-trendAverage);
-  Serial.print("   "); 
-  Serial.print(getAverageAmplitude(30));
-  Serial.print("   "); 
-  Serial.println(t); 
-*/
-  if(t>24) t=24;
-  if(t<0) t=0;
-
-  if(trendAverage<400) t*=0.3;
- //  initSquarePointB();
-  initRing();
-  int k;
-  for(int i=0;i<24;i++){
-    k=ring[i].y;
-    ring[i].y=ring[i].z;
-    ring[i].z=k+5;
-  }
-for( int z=1; z<cube.size; z++)
-  for( int x=0; x<cube.size; x++)
-     for(int y=0; y<cube.size; y++){
-          readColor=cube.getVoxel(x,y,z);
-          cube.setVoxel(x,y,z-1,readColor); 
-         }
-         
-  for( int x=0; x<cube.size; x++)
-     for(int y=0; y<cube.size; y++)
-      cube.setVoxel(x,y,cube.size-1,clearColor);
-         
- for( int i=0;i<t;i++){
-  musicRingColor = Color( 50*sin(colorInc+i*0.1)>0?50*sin(colorInc+i*0.1):0, 50*sin(colorInc+pi*2/3+i*0.1)>0?50*sin(colorInc+pi*2/3+i*0.1):0, 50*sin(colorInc+pi*4/3+i*0.1)>0?50*sin(colorInc+pi*4/3+i*0.1):0 );
-  cube.setVoxel(ring[i],musicRingColor);
- }
-}
-
-/****************************************
- * FFTJoy3 functions *
- * **************************************/
- void FFTJoy3() {
-  
-  Sinewave mySinewave;
-
-    static long t=0;
-  
-    Color clearColor = Color( 0, 0, 0 );
-    Color fftStripColor[5];
-    for(int i=0;i<6;i++){
-    fftStripColor[i] = Color( 50*sin(colorInc+i*0.1)>0?50*sin(colorInc+i*0.1):0, 50*sin(colorInc+pi*2/3+i*0.1)>0?50*sin(colorInc+pi*2/3+i*0.1):0, 50*sin(colorInc+pi*4/3+i*0.1)>0?50*sin(colorInc+pi*4/3+i*0.1):0 );
-    }
-  colorInc+=colorSpeed;  
-//  delay(5);
-  for(int i=0;i<2;i++){
-  mySinewave=cube.getSinewave(1000);
-  runningAverage=mySinewave.amplitude;
-  runningPeriod=mySinewave.timePeriod;
-  
-  addAverageToChain(runningAverage);
-  trendAverage=getTrendAverage(30);
-
- //  if(getTrendAverage(2)>trendAverage) t=(getTrendAverage(2)-trendAverage)/sqrt(getAverageAmplitude(30))+sqrt(runningAverage)/10;
-  //   else t-=(getTrendAverage(2)-runningAverage)/sqrt(getAverageAmplitude(30));
-  if(runningAverage>trendAverage) t=(runningAverage-trendAverage)/sqrt(getAverageAmplitude(30))+sqrt(runningAverage)/10;
-  else t-=(trendAverage-runningAverage)/sqrt(getAverageAmplitude(30));
-  /*
-  Serial.print(runningPeriod);
-  Serial.print("   "); 
-  Serial.print(trendAverage);
-  Serial.print("   "); 
-  Serial.print(runningAverage-trendAverage);
-  Serial.print("   "); 
-  Serial.println(t); 
-  */
-  if(t<0) t=0;
-  if(t>5) t=5;
-
-  if(trendAverage<400) t*=0.3;
-  
-  char column;
-  if(runningPeriod<25) column=0; 
-  else column=(runningPeriod-20)/10;
-  if (column>5) column=5;
-    
-    for( int x=0; x<cube.size; x++)
-      for( int y=0; y<cube.size; y++){
-        cube.setVoxel( x, y, cube.size-1, clearColor );
-      }
-    for( int y=0;y<=t; y++){
-        cube.setVoxel( column, y, cube.size-1, fftStripColor[y] );
-        if((t-1>0)&&(y>1)) {
-          if(column>0) cube.setVoxel( column-1, y-2, cube.size-1, fftStripColor[y-2] );
-          if(column<5) cube.setVoxel( column+1, y-2, cube.size-1, fftStripColor[y-2] );
-        }
-        if((t-3>=0)&&(y>3)) {
-          if(column>1) cube.setVoxel( column-2, y-4, cube.size-1, fftStripColor[y-4] );
-          if(column<4) cube.setVoxel( column+2, y-4, cube.size-1, fftStripColor[y-4] );
-        }
-        if((t-5>=0)&&(y>=5)) {
-          if(column>2) cube.setVoxel( column-3, y-5, cube.size-1, fftStripColor[y-5] );
-          if(column<3) cube.setVoxel( column+3, y-5, cube.size-1, fftStripColor[y-5] );
-        }
-    }
-  }
-    for( int x=0; x<cube.size; x++)
-        for(int y=0; y<cube.size; y++)
-         for( int z=1; z<cube.size; z++){
-          readColor=cube.getVoxel(x,y,z);
-          cube.setVoxel(x,y,z-1,readColor); 
-         }   
-
-}
-
-/****************************************
- * MusicRainbow functions *
- * **************************************/
-
- void musicRainbow()
-{
-  uint16_t j;
-  uint16_t x,y,z;
-  Sinewave mySinewave;
-  Color mainColor;
-  colorInc+=colorSpeed*2;
-
-for(int i=0;i<getSinewaveSampleNum;i++){
-  mySinewave=cube.getSinewave(1000);
-  runningAverage+=mySinewave.amplitude;
-  runningPeriod+=mySinewave.timePeriod;
-  }
-  runningAverage/=getSinewaveSampleNum;
-  runningPeriod/=getSinewaveSampleNum;
-  addAverageToChain(runningAverage);
-
-  trendAverage=getTrendAverage(30);
-  
-  static float t=0;
-  if(runningAverage>trendAverage) t=25+(runningAverage-trendAverage)/30+sqrt(runningAverage)/30;
-  else t=20-(trendAverage-runningAverage)/50;
-/*
-  Serial.print(runningAverage);
-  Serial.print("   "); 
-  Serial.print(runningAverage-trendAverage);
-  Serial.print("   "); 
-  Serial.print(trendAverage);
-  
-  Serial.print("   "); 
-  Serial.println(t); 
-*/
-  if(t<3) t=3;
-  // delay(5);
-   for(z=0;z<cube.size;z++)
-     for(x=0;x<cube.size;x++)
-       for(y=0;y<cube.size;y++)
-       {
-        int i=z*36+8*x+y;
-         mainColor = Color( 50*sin(colorInc+i*0.01)>0?50*sin(colorInc+i*0.01):0, 50*sin(colorInc+pi*2/3+i*0.01)>0?50*sin(colorInc+pi*2/3+i*0.01):0, 50*sin(colorInc+pi*4/3+i*0.01)>0?50*sin(colorInc+pi*4/3+i*0.01):0 );
-         mainColor.red=mainColor.red*t/50;
-         mainColor.green=mainColor.green*t/50;
-         mainColor.blue=mainColor.blue*t/50;
-         cube.setVoxel(x,y,z,mainColor);
-       }
-   
-}
 
 
 Color Wheel(byte WheelPos) {
@@ -1324,8 +1450,6 @@ void incrementDemo() {
   fading=true;
   if(demo==GOLDENRAIN || demo==PURPLERAIN || demo==ACIDRAIN)
     initSalvos();
-  if(demo==DYNAMITE)
-    initDynamite();
   if(demo>=DEMO_ROUTINES)
     demo=0;
 }
@@ -1336,8 +1460,6 @@ void decrementDemo() {
   fading=true;
   if(demo==GOLDENRAIN || demo==PURPLERAIN || demo==ACIDRAIN)
     initSalvos();
-  if(demo==DYNAMITE)
-    initDynamite();
   if(demo<0)
     demo=DEMO_ROUTINES-1;
 }
@@ -1380,31 +1502,31 @@ Color adjustGamma(Color col, float opacity) {
   return col;
 }
 
-void drawCube(Point topLeft, int side, Color col) {
-  Point topPoints[4];
-  Point bottomPoints[4];
-  topPoints[0]=topLeft;
-  topPoints[1]=Point(topLeft.x+side, topLeft.y, topLeft.z);
-  topPoints[2]=Point(topLeft.x+side, topLeft.y+side, topLeft.z);
-  topPoints[3]=Point(topLeft.x, topLeft.y+side, topLeft.z);
-  Point bottomLeft=Point(topLeft.x, topLeft.y, topLeft.z+side);
-  bottomPoints[0]=bottomLeft;
-  bottomPoints[1]=Point(bottomLeft.x+side, bottomLeft.y, bottomLeft.z);
-  bottomPoints[2]=Point(bottomLeft.x+side, bottomLeft.y+side, bottomLeft.z);
-  bottomPoints[3]=Point(bottomLeft.x, bottomLeft.y+side, bottomLeft.z);
-  
-  for (int i=0; i<4; i++) {
-    drawLine(topPoints[i], bottomPoints[i], col);
-    drawLine(topPoints[i], topPoints[(i+1)%4], col);
-    drawLine(bottomPoints[i], bottomPoints[(i+1)%4], col);
-  }
-  
-  Color comp=complement(col);
-  for (int i=0; i<4; i++) {
-    cube.setVoxel(topPoints[i], comp);
-    cube.setVoxel(bottomPoints[i], comp);
-  }
-}
+//void drawCube(Point topLeft, int side, Color col) {
+//  Point topPoints[4];
+//  Point bottomPoints[4];
+//  topPoints[0]=topLeft;
+//  topPoints[1]=Point(topLeft.x+side, topLeft.y, topLeft.z);
+//  topPoints[2]=Point(topLeft.x+side, topLeft.y+side, topLeft.z);
+//  topPoints[3]=Point(topLeft.x, topLeft.y+side, topLeft.z);
+//  Point bottomLeft=Point(topLeft.x, topLeft.y, topLeft.z+side);
+//  bottomPoints[0]=bottomLeft;
+//  bottomPoints[1]=Point(bottomLeft.x+side, bottomLeft.y, bottomLeft.z);
+//  bottomPoints[2]=Point(bottomLeft.x+side, bottomLeft.y+side, bottomLeft.z);
+//  bottomPoints[3]=Point(bottomLeft.x, bottomLeft.y+side, bottomLeft.z);
+//  
+//  for (int i=0; i<4; i++) {
+//    drawLine(topPoints[i], bottomPoints[i], col);
+//    drawLine(topPoints[i], topPoints[(i+1)%4], col);
+//    drawLine(bottomPoints[i], bottomPoints[(i+1)%4], col);
+//  }
+//  
+//  Color comp=complement(col);
+//  for (int i=0; i<4; i++) {
+//    cube.setVoxel(topPoints[i], comp);
+//    cube.setVoxel(bottomPoints[i], comp);
+//  }
+//}
 
 // draws a line from point p1 to p2 and colors each of the points according
 // to the col parameter
