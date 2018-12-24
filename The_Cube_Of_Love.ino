@@ -1,6 +1,5 @@
 /*
  * The code written in this file is a modified version of LookingGlass' open source 6x6x6 L3D Cube program.
- * Specifically, the original file was x6CubeMusicPack
  * The original program's GitHub location is linked in this project's GitHub location.
  */
 
