@@ -4,6 +4,9 @@
  * The original program's GitHub location is linked in this project's GitHub location.
  */
 
+
+#include <vector>
+using namespace std;
 /********************************************
  * Global variables & functions             *
  ********************************************/
@@ -14,24 +17,26 @@
 #define GAIN_CONTROL    3
 #define INPUT_GAIN      0
 
-#define FFT_JOY         0
-#define GOLDENRAIN      1
-#define PURPLERAIN      2
-#define ACIDRAIN        3
-#define FFT_FIRE        4
-#define MUSICTOWER      5
+#define STATIC_HEART    0
+#define STATIC_S        1
 
-#define  FIREWORKS      6
-#define  PLASMA         7
-#define  RAINBOW3D      8
-#define CUBESPANDER     9
-#define ZEROGRAIN       10
-#define HEARTATTACK     11
+#define  FIREWORKS      2
+#define  PLASMA         3
+#define  RAINBOW3D      4
+#define CUBESPANDER     5
+#define ZEROGRAIN       6
+#define HEARTATTACK     7
 
-#define STATIC_HEART    12
-#define STATIC_S        13
+#define FFT_JOY         8
+#define GOLDENRAIN      9
+#define PURPLERAIN      10
+#define ACIDRAIN        11
+#define FFT_FIRE        12
+#define MUSICTOWER      13
 
 #define DEMO_ROUTINES   14
+
+
 
 
 /********************************************
@@ -44,6 +49,14 @@ int delayVal;
 int brightness;
 int frameCount;
 int maxAmplitude;
+
+//jtennies10
+const int STATIC_START = 0;
+const int DYNAMIC_START = 2;
+const int MUSIC_START = 8;
+
+enum Categories{still=STATIC_START, dynamic=DYNAMIC_START, music=MUSIC_START};
+Categories animationType;
 
 
 /*******************************
@@ -157,7 +170,7 @@ void fade();
 void initMicrophone();
 void add(Point& a, Point& b);
 void fadeSmooth(char lowerLim, char upperLim, float scaleFactor);
-//void smoothFade(float scaleFactor);
+void smoothFade();
 void drawLine(Point p1, Point p2, Color col);
 void mixVoxel(Point currentPoint, Color col);
 void setVoxel(int x, int y, int z, bool clear);
@@ -196,6 +209,7 @@ void FFTJoy2();
 void musicTower();
 void flyingCurve();
 void initSquarePointB();
+void initRing();
 
 
 

@@ -20,7 +20,9 @@ void setup() {
  *************************************/
   delayVal=10;
 //  demo=FFT_JOY;
-  demo=ZEROGRAIN;
+  demo=STATIC_HEART;
+  animationType = still;
+  
   frameCount=0;
   brightness=50;
   //maxBrightness=50;
@@ -92,8 +94,11 @@ initFireworks();
   fading=false;
   fadeValue=255;
   fadeSpeed=1;
-  
 
+
+
+  //jtennies10
+  //populate animations with the animations in the form of 
    
 }
 
@@ -1345,8 +1350,6 @@ void launchRain(int amplitude) {
 }
 
 
-
-
 Color Wheel(byte WheelPos) {
   if(WheelPos < 85) {
    return Color(WheelPos, 85 - WheelPos, 0);
@@ -1367,18 +1370,19 @@ Color Wheel(byte WheelPos) {
 void checkFlipState() {
   updateAccelerometer();
 //  Serial.println(accelerometer[2]);
-  
-  if(accelerometer[2]>FACEPLANT)  //if the cube is upside-down, set the upside-down flag and mark the time when it was flipped, this is different from 8x8x8 Cube as the chip is on the bottom side
-  {
-    //  upsideDownTime=millis();
-      lastFaceplant=millis();
-  //      Serial.println("I'm upside-down!");
-  }
+//  
+//  if(accelerometer[2]>FACEPLANT)  //if the cube is upside-down, set the upside-down flag and mark the time when it was flipped, this is different from 8x8x8 Cube as the chip is on the bottom side
+//  {
+//    //  upsideDownTime=millis();
+//      lastFaceplant=millis();
+//Serial.println("I'm upside-down!");
+//  }
   
   if(accelerometer[0]<LOCK) {  //if the cube is upside-down, set the upside-down flag and mark the time when it was flipped
     autoCycle=false;
- //  Serial.println("LOCK!");
-  
+   Serial.println("LOCK!"); 
+   lastFaceplant = millis();
+//    delay(200);
   }
   if(accelerometer[1]>LEFT_SIDE) {  //if the cube is flipped to either side
     lastLeft=millis();
@@ -1416,8 +1420,39 @@ void checkFlipState() {
       lastRight=millis()-FLIP_TIMEOUT;
       return;
     }
+
+    if((millis() - lastFaceplant < FLIP_TIMEOUT)&&(millis()-lastFaceplant>FLIP_DEBOUNCE)) {
+    switch (animationType) {
+    case still: 
+      Serial.println("Still");
+      animationType = dynamic;
+      demo = animationType;
+      setFadeSpeed();
+      fading=true;
+      break;
+
+    case dynamic:
+      Serial.println("Dynamic");
+      animationType = music;
+      demo = animationType;
+      setFadeSpeed();
+      fading=true;
+      break;
+
+    case music:
+    Serial.println("Music");
+      animationType = still;
+      demo = still;
+      setFadeSpeed();
+      fading=true;
+      break;
+    } 
+
+    lastChange=millis();
+      lastFaceplant=millis()-FLIP_TIMEOUT;
+    }
   }
-    
+
   if(autoCycle)
       if(millis()-lastAutoCycle>AUTOCYCLE_TIME) { //in autocycle, change demos every 15 seconds
         incrementDemo();
@@ -1445,22 +1480,26 @@ void setFadeSpeed() {
  
 void incrementDemo() {
   demo++;
+  if(demo == STATIC_START || demo == DYNAMIC_START || demo == MUSIC_START) {
+    demo = animationType;
+  }
   setFadeSpeed();
   fading=true;
   if(demo==GOLDENRAIN || demo==PURPLERAIN || demo==ACIDRAIN)
     initSalvos();
   if(demo>=DEMO_ROUTINES)
-    demo=0;
+    demo=MUSIC_START;
 }
  
 void decrementDemo() {
   demo--;
-  //setFadeSpeed();
+  if(demo == STATIC_START-1) demo = DYNAMIC_START-1;
+  else if(demo == DYNAMIC_START-1) demo = MUSIC_START-1;
+  else if(demo == MUSIC_START-1) demo = DEMO_ROUTINES-1;
+  
   fading=true;
   if(demo==GOLDENRAIN || demo==PURPLERAIN || demo==ACIDRAIN)
     initSalvos();
-  if(demo<0)
-    demo=DEMO_ROUTINES-1;
 }
 
 float distance(float x, float y, float z, float x1, float y1, float z1) {
