@@ -220,8 +220,8 @@ void loop() {
           staticHeart();
           break;    
 
-        case(STATIC_S):
-          staticS();
+        case(STATIC_COLOR):
+          staticColor();
           break;
 
         default:
@@ -646,12 +646,25 @@ void staticHeart() {
   }
 }
 
-void staticS() {
-  //display s
+//jtennies10
+//colors cube one color and doesn't change through loop
+//rgb(255, 153, 204)
+//rgb(36, 143, 143)
+//rgb(102, 0, 0), rgb(204, 102, 0) maroon and gold
+void staticColor() {
+  Color voxelColor(255, 153, 204);
   for(int x = 0; x < cube.size; x++) {
     for(int y = 0; y < cube.size; y++) {
-      if(sMatrix[x][y] == 1) {
-        cube.setVoxel(x,y,5,blue);
+      for(int z = 0; z < cube.size; z++) {
+        if(z % 2 == 0) {
+          if((y % 2 == 0 && x % 2 == 0) || (y % 2 != 0 && x % 2 != 0)) {
+            cube.setVoxel(x,y,z, voxelColor);
+          }
+        } else {
+          if((y % 2 == 0 && x % 2 != 0) || (y % 2 != 0 && x % 2 == 0)) {
+            cube.setVoxel(x,y,z, voxelColor);
+          }
+        }
       }
     }
   }

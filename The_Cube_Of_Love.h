@@ -18,7 +18,7 @@ using namespace std;
 #define INPUT_GAIN      0
 
 #define STATIC_HEART    0
-#define STATIC_S        1
+#define STATIC_COLOR    1
 
 #define  FIREWORKS      2
 #define  PLASMA         3
@@ -148,17 +148,9 @@ Color heartAttack(Color voxelColor);
 
 /********************************************
  * jtennies10                        
- * staticS
+ * staticColor
  ********************************************/
- void staticS();
- const short sMatrix[][6] = {
-  {0, 0, 0, 0, 0, 0},
-  {1, 0, 0, 1, 0, 0},
-  {1, 0, 1, 0, 1, 0},
-  {1, 0, 1, 0, 1, 0},
-  {0, 1, 0, 0, 1, 0},
-  {0, 0, 0, 0, 0, 0}
- };
+ void staticColor();
  
 
 
