@@ -20,7 +20,7 @@ void setup() {
  *************************************/
   delayVal=10;
 //  demo=FFT_JOY;
-  demo=STATIC_HEART;
+  demo=STATIC_COLOR;
   animationType = still;
   
   frameCount=0;
@@ -650,9 +650,12 @@ void staticHeart() {
 //colors cube one color and doesn't change through loop
 //rgb(255, 153, 204)
 //rgb(36, 143, 143)
-//rgb(102, 0, 0), rgb(204, 102, 0) maroon and gold
+//rgb(26, 0, 0), rgb(204, 102, 0) maroon and gold
 void staticColor() {
-  Color voxelColor(255, 153, 204);
+  Color voxelColor(102, 0, 51);
+  voxelColor.red %= brightness;
+  voxelColor.green %= brightness;
+  voxelColor.blue %= brightness;
   for(int x = 0; x < cube.size; x++) {
     for(int y = 0; y < cube.size; y++) {
       for(int z = 0; z < cube.size; z++) {
