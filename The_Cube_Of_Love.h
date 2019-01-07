@@ -18,23 +18,24 @@ using namespace std;
 #define INPUT_GAIN      0
 
 #define STATIC_HEART    0
-#define STATIC_COLOR    1
+#define STATIC_COLOR_GANNON    1
+#define STATIC_COLOR_PURPLE    2
 
-#define  FIREWORKS      2
-#define  PLASMA         3
-#define  RAINBOW3D      4
-#define CUBESPANDER     5
-#define ZEROGRAIN       6
-#define HEARTATTACK     7
+#define  FIREWORKS      3
+#define  PLASMA         4
+#define  RAINBOW3D      5
+#define CUBESPANDER     6
+#define ZEROGRAIN       7
+#define HEARTATTACK     8
 
-#define FFT_JOY         8
-#define GOLDENRAIN      9
-#define PURPLERAIN      10
-#define ACIDRAIN        11
-#define FFT_FIRE        12
-#define MUSICTOWER      13
+#define FFT_JOY         9
+#define GOLDENRAIN      10
+#define PURPLERAIN      11
+#define ACIDRAIN        12
+#define FFT_FIRE        13
+#define MUSICTOWER      14
 
-#define DEMO_ROUTINES   14
+#define DEMO_ROUTINES   15
 
 
 
@@ -52,8 +53,8 @@ int maxAmplitude;
 
 //jtennies10
 const int STATIC_START = 0;
-const int DYNAMIC_START = 2;
-const int MUSIC_START = 8;
+const int DYNAMIC_START = 3;
+const int MUSIC_START = 9;
 
 enum Categories{still=STATIC_START, dynamic=DYNAMIC_START, music=MUSIC_START};
 Categories animationType;
@@ -148,9 +149,10 @@ Color heartAttack(Color voxelColor);
 
 /********************************************
  * jtennies10                        
- * staticColor
+ * staticColorGannon and staticColorPurple
  ********************************************/
- void staticColor();
+ void staticColorGannnon();
+ void staticColorPurple();
  
 
 

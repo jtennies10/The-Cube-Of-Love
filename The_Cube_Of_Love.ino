@@ -20,7 +20,7 @@ void setup() {
  *************************************/
   delayVal=10;
 //  demo=FFT_JOY;
-  demo=STATIC_COLOR;
+  demo=STATIC_COLOR_GANNON;
   animationType = still;
   
   frameCount=0;
@@ -96,9 +96,6 @@ initFireworks();
   fadeSpeed=1;
 
 
-
-  //jtennies10
-  //populate animations with the animations in the form of 
    
 }
 
@@ -220,10 +217,14 @@ void loop() {
           staticHeart();
           break;    
 
-        case(STATIC_COLOR):
-          staticColor();
+        case(STATIC_COLOR_GANNON):
+          staticColorGannon();
           break;
 
+        case(STATIC_COLOR_PURPLE):
+          staticColorPurple();
+          break;
+        
         default:
           break;
     }
@@ -647,11 +648,34 @@ void staticHeart() {
 }
 
 //jtennies10
-//colors cube one color and doesn't change through loop
-//rgb(255, 153, 204)
-//rgb(36, 143, 143)
-//rgb(26, 0, 0), rgb(204, 102, 0) maroon and gold
-void staticColor() {
+void staticColorGannon() {
+  Color voxelMaroon(5, 0, 0);
+  Color voxelGold(204, 102, 0);
+  voxelMaroon.red %= brightness;
+  voxelMaroon.green %= brightness;
+  voxelMaroon.blue %= brightness;
+  voxelGold.red %= brightness;
+  voxelGold.green %= brightness;
+  voxelGold.blue %= brightness;
+  for(int x = 0; x < cube.size; x++) {
+    for(int y = 0; y < cube.size; y++) {
+      for(int z = 0; z < cube.size; z++) {
+        if(y % 2 == 0) {
+          if((z % 2 == 0 && x % 2 == 0) || (z % 2 != 0 && x % 2 != 0)) {
+            cube.setVoxel(x,y,z, voxelMaroon);
+          }
+        } else {
+          if((z % 2 == 0 && x % 2 != 0) || (z % 2 != 0 && x % 2 == 0)) {
+            cube.setVoxel(x,y,z, voxelGold);
+          } 
+        }
+      }
+    }
+  }
+}
+
+//jtennies10
+void staticColorPurple() {
   Color voxelColor(102, 0, 51);
   voxelColor.red %= brightness;
   voxelColor.green %= brightness;
